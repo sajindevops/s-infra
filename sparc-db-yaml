@@ -1,0 +1,109 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Create sparc rds resource.
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Sandbox db configuration
+          Parameters:
+            - DbInstanceClass
+            - DbStorage
+            - DbVersion
+            - InfraStackName
+    ParameterLabels:
+      VpcBlock:
+        default: mysql configuration details
+
+Parameters:
+  DbInstanceClass:
+    Type: String
+    Description: instance type
+    Default: db.t3.small
+  DbStorage:
+    Type: String
+    Description: Storage size
+    Default: 50
+  DbVersion:
+    Type: String
+    Description: choosing mysql version
+    AllowedValues:
+      - 8.0.28
+      - 8.0.30
+    Default: 8.0.28
+  InfraStackName:
+    Type: String
+    Description: nested stack name
+    Default: Sandbox-infra
+
+
+#  privatesubnet01:
+#    Type: String
+#    Default:
+#      Fn::ImportValue:
+#        Fn::Sub: '${AWS::StackName}-PrivateSubnet1'
+#
+#
+#  privatesubnet02:
+#    Type: String
+#    Default:
+#      Fn::ImportValue:
+#        'Fn::Sub': '${AWS::StackName}-PrivateSubnet2'
+#  DbSecurityGroup:
+#    Type: String
+#    Default:
+#      Fn::ImportValue:
+#        'Fn::Sub': '${AWS::StackName}-DatabaseSG'
+Resources:
+  DBSubnetGroup:
+    Type: 'AWS::RDS::DBSubnetGroup'
+    Properties:
+      DBSubnetGroupDescription: Private subnet for databases
+      SubnetIds:
+        - Fn::ImportValue:
+            'Fn::Sub': '${InfraStackName}-PrivateSubnet1'
+        - Fn::ImportValue:
+            'Fn::Sub': '${InfraStackName}-PrivateSubnet2'
+  SecretsManagerSparcAdmin:
+    Type: 'AWS::SecretsManager::Secret'
+    Properties:
+      Description: SPARC DB admin credentials
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "admin"}'
+        GenerateStringKey: "password"
+        PasswordLength: 32
+        ExcludeCharacters: '"@/\'
+  DBInstance:
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      DBInstanceIdentifier: sparc-database
+      AllocatedStorage: !Ref DbStorage
+      DBInstanceClass: !Ref DbInstanceClass
+      Engine: "MYSQL"
+      MasterUsername: !Sub '{{resolve:SecretsManager:${SecretsManagerSparcAdmin}::username}}'
+      MasterUserPassword: !Sub '{{resolve:SecretsManager:${SecretsManagerSparcAdmin}::password}}'
+      BackupRetentionPeriod: 7
+      MultiAZ: true
+      EngineVersion: !Ref DbVersion
+      AutoMinorVersionUpgrade: true
+      PubliclyAccessible: false
+      Port: 3306
+      StorageEncrypted: true
+      CopyTagsToSnapshot: true
+      EnableIAMDatabaseAuthentication: false
+      DeletionProtection: true
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      VPCSecurityGroups:
+        - Fn::ImportValue:
+           'Fn::Sub': '${InfraStackName}-DatabaseSG'
+      Tags:
+        - Key: Name
+          Value: sparc-database
+
+  SecretRDSInstanceAttachment:
+    Type: 'AWS::SecretsManager::SecretTargetAttachment'
+    Properties:
+      SecretId: !Ref SecretsManagerSparcAdmin
+      TargetId: !Ref DBInstance
+      TargetType: 'AWS::RDS::DBInstance'
+
