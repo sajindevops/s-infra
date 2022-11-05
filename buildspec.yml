@@ -16,6 +16,7 @@ phases:
     commands:
       - ls -lt
       - cat README.md
+      - aws s3 ls
       - aws cloudformation validate-template --template-body file://sparc-db.yaml
   build:
     commands:
