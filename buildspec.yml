@@ -7,10 +7,6 @@ env:
     templates: |
       sparc-db.yaml      
       master-stack.yaml
-    environment_config: |
-      "env-dev. json"
-      "env-qa.json"
-      "env-prod.json"
 phases:
   install:
     runtime-versions:
@@ -20,8 +16,9 @@ phases:
       - ls -lt
       - cat README.md
       - |
-        for cfsfiles in $templates
+        for files in $templates
         do
+           echo $files
            aws cloudformation validate-template --template-body file://$templates
         done
   build:
@@ -29,12 +26,8 @@ phases:
       - |
         for cfnfiles in $templates
         do
+           echo "cfnfiles $cfnfiles"
            aws s3 cp $cfsfiles s3://spc-template-store
-        done
-      - |
-        for config in $environment_config
-        do
-           aws s3 cp $config s3://spc-template-strore
         done
 artifacts:
   files:
