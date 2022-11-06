@@ -2,6 +2,12 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: "CloudFormation template for creating a task definition"
 
 Parameters:
+  Environment:
+    Type: String
+    AllowedValues:
+       - dev
+       - qa
+       - prod
   DbInstanceClass:
     Type: String
     Description: instance type
