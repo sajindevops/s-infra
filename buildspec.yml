@@ -15,15 +15,13 @@ phases:
     commands:
       - ls -lt
       - cat README.md
-      - |
-        for files in $templates; do
+      - for files in $templates; do
            echo $files
            aws cloudformation validate-template --template-body file://$templates
         done
   build:
     commands:
-      - |
-        for cfnfiles in $templates; do
+      - for cfnfiles in $templates; do
            echo "cfnfiles $cfnfiles"
            aws s3 cp $cfsfiles s3://spc-template-store
         done
