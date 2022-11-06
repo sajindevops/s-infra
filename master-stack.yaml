@@ -32,7 +32,7 @@ Resources:
     Type: "AWS::CloudFormation::Stack"
     Properties:
       TemplateURL:
-        Fn::Sub: "https://s3.amazonaws.com/spc-template-store/sparc-db-stack.yaml"
+        Fn::Sub: "https://spc-template-store.s3.us-east-2.amazonaws.com/sparc-db.yaml"
       Parameters:
         DbInstanceClass:
           Ref: DbInstanceClass
