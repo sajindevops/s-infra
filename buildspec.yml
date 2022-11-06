@@ -2,39 +2,39 @@ version: 0.2
 
 env:
   git-credential-helper: yes
+  variables:
+    templates:
+      - sparc-db.yaml
+      - master-stack.yaml
+    environment_config:
+      - env-dev.json
+      - env-qa.json
+      - env-prod.json
 phases:
   install:
-    #If you use the Ubuntu standard image 2.0 or later, you must specify runtime-versions.
-    #If you specify runtime-versions and use an image other than Ubuntu standard image 2.0, the build fails.
     runtime-versions:
       python: 3.9
-      # name: version
-      #commands:
-      # - command
-      # - command
   pre_build:
     commands:
       - ls -lt
       - cat README.md
-      - aws s3 ls
-      - aws cloudformation validate-template --template-body file://sparc-db.yaml
+      - |
+        for cfsfiles in $templates
+        do
+           aws cloudformation validate-template --template-body file://$templates
+        done
   build:
     commands:
-      - git log | head -100
-      - git status
-      - ls
-      - git archive --format=zip HEAD > application.zip
-      #post_build:
-      #commands:
-      # - command
-      # - command
+      - |
+        for cfnfiles in $templates
+        do
+           aws s3 cp $cfsfiles s3://spc-template-store
+        done
+      - |
+        for config in $environment_config
+        do
+           aws s3 cp $config s3://spc-template-strore
+        done
 artifacts:
   files:
     - application.zip
-    # - location
-    #name: $(date +%Y-%m-%d)
-    #discard-paths: yes
-    #base-directory: location
-    #cache:
-    #paths:
-    # - paths
