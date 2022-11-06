@@ -21,10 +21,10 @@ phases:
         done
   build:
     commands:
-      - for cfnfiles in $templates; do
-           echo "cfnfiles $cfnfiles" ;
-           aws s3 cp $cfsfiles s3://spc-template-store ;
-        done
+#       - for cfnfiles in $templates; do
+#            echo "cfnfiles $cfnfiles" ;
+        - aws s3 cp sparc-db.yaml s3://spc-template-store
+#         done
 artifacts:
   files:
     - application.zip
