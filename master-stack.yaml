@@ -1,0 +1,117 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "CloudFormation template for creating a task definition"
+
+Parameters:
+  DbInstanceClass:
+    Type: String
+    Description: instance type
+    Default: db.t3.small
+  DbStorage:
+    Type: String
+    Description: Storage size
+    Default: 50
+  DbVersion:
+    Type: String
+    Description: choosing mysql version
+    AllowedValues:
+      - 8.0.28
+      - 8.0.30
+    Default: 8.0.28
+  InfraStackName:
+    Type: String
+    Description: nested stack name
+    Default: Sandbox-infra
+Resources:
+  DbStack:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      TemplateURL:
+        Fn::Sub: "https://s3.amazonaws.com/spc-template-store/sparc-db-stack.yaml"
+      Parameters:
+        DbInstanceClass:
+          Ref: DbInstanceClass
+        DbStorage:
+          Ref: DbStorage
+        DbVersion:
+          Ref: DbVersion
+        InfraStackName:
+          Ref: InfraStackName
+      Tags:
+        - Key: Name
+          Value: SecurityStack
+#  FargateStack:
+#    Type: "AWS::CloudFormation::Stack"
+#    Properties:
+#      TemplateURL:
+#        Fn::Sub: "https://s3.amazonaws.com/spc-template-store/fargate.yaml"
+#      Parameters:
+#        S3BucketName:
+#          Ref: S3BucketName
+#        VPCID:
+#          Ref: VPCID
+#        Environment:
+#          Ref: Environment
+#      Tags:
+#        - Key: Name
+#          Value: SecurityStack
+#
+#    ApiGatewayStack:
+#      Type: "AWS::CloudFormation::Stack"
+#      Properties:
+#        TemplateURL:
+#          Fn::Sub: "https://s3.amazonaws.com/spc-template-store/api-gateway.yaml"
+#        Parameters:
+#          S3BucketName:
+#            Ref: S3BucketName
+#          VPCID:
+#            Ref: VPCID
+#          Environment:
+#            Ref: Environment
+#        Tags:
+#          - Key: Name
+#            Value: SecurityStack
+#    ElasticacheStack:
+#      Type: "AWS::CloudFormation::Stack"
+#      Properties:
+#        TemplateURL:
+#          Fn::Sub: "https://s3.amazonaws.com/spc-template-store/elasticache.yaml"
+#        Parameters:
+#          S3BucketName:
+#            Ref: S3BucketName
+#          VPCID:
+#            Ref: VPCID
+#          Environment:
+#            Ref: Environment
+#        Tags:
+#          - Key: Name
+#            Value: SecurityStack
+#    S3Stack:
+#      Type: "AWS::CloudFormation::Stack"
+#      Properties:
+#        TemplateURL:
+#          Fn::Sub: "https://s3.amazonaws.com/spc-template-store/s3_velocity_report.yaml"
+#        Parameters:
+#          S3BucketName:
+#            Ref: S3BucketName
+#          VPCID:
+#            Ref: VPCID
+#          Environment:
+#            Ref: Environment
+#        Tags:
+#          - Key: Name
+#            Value: SecurityStack
+#    SchedulerStack:
+#      Type: "AWS::CloudFormation::Stack"
+#      Properties:
+#        TemplateURL:
+#          Fn::Sub: "https://s3.amazonaws.com/spc-template-store/scheduler_lambda.yaml"
+#        Parameters:
+#          S3BucketName:
+#            Ref: S3BucketName
+#          VPCID:
+#            Ref: VPCID
+#          Environment:
+#            Ref: Environment
+#        Tags:
+#          - Key: Name
+#            Value: SecurityStack
