@@ -1,5 +1,5 @@
 {
-  "Parameters" : {
+  "Parameter" : {
     "Environment": "dev",
     "DbInstanceClass": "db.t3.small",
     "DbStorage": "50",
