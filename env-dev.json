@@ -1,9 +1,22 @@
-{
-  "Parameters" : {
-    "Environment": "dev",
-    "DbInstanceClass": "db.t3.small",
-    "DbStorage": "50",
-    "DbVersion": "8.0.30",
-    "InfraStackName": "Sandbox-infra"
+[
+  {
+    "ParameterKey": "Environment",
+    "ParameterValue": "dev"
+  },
+  {
+    "ParameterKey": "DbInstanceClass",
+    "ParameterValue": "db.t3.small"
+  },
+  {
+    "ParameterKey": "DbStorage",
+    "ParameterValue": "50"
+  },
+  {
+    "ParameterKey": "DbVersion",
+    "ParameterValue": "8.0.30"
+  },
+  {
+    "ParameterKey": "InfraStackName",
+    "ParameterValue": "Sandbox-infra"
   }
-}
+]
