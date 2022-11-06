@@ -2,14 +2,15 @@ version: 0.2
 
 env:
   git-credential-helper: yes
-  variables:
-    templates:
-      - "sparc-db.yaml"
-      - "master-stack.yaml"
-    environment_config:
-      - "env-dev.json"
-      - "env-qa.json"
-      - "env-prod.json"
+  environment_variables:
+  plaintext:
+    templates: |
+      sparc-db.yaml      
+      master-stack.yaml
+    environment_config: |
+      "env-dev. json"
+      "env-qa.json"
+      "env-prod.json"
 phases:
   install:
     runtime-versions:
