@@ -1,20 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: Create sparc rds resource.
 
-Metadata:
-  AWS::CloudFormation::Interface:
-    ParameterGroups:
-      - Label:
-          default: Sandbox db configuration
-          Parameters:
-            - DbInstanceClass
-            - DbStorage
-            - DbVersion
-            - InfraStackName
-    ParameterLabels:
-      VpcBlock:
-        default: mysql configuration details
-
 Parameters:
   DbInstanceClass:
     Type: String
@@ -37,23 +23,20 @@ Parameters:
     Default: Sandbox-infra
 
 
-#  privatesubnet01:
-#    Type: String
-#    Default:
-#      Fn::ImportValue:
-#        Fn::Sub: '${AWS::StackName}-PrivateSubnet1'
-#
-#
-#  privatesubnet02:
-#    Type: String
-#    Default:
-#      Fn::ImportValue:
-#        'Fn::Sub': '${AWS::StackName}-PrivateSubnet2'
-#  DbSecurityGroup:
-#    Type: String
-#    Default:
-#      Fn::ImportValue:
-#        'Fn::Sub': '${AWS::StackName}-DatabaseSG'
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Sandbox db configuration
+          Parameters:
+            - DbInstanceClass
+            - DbStorage
+            - DbVersion
+            - InfraStackName
+    ParameterLabels:
+      VpcBlock:
+        default: mysql configuration details
+
 Resources:
   DBSubnetGroup:
     Type: 'AWS::RDS::DBSubnetGroup'
@@ -71,17 +54,17 @@ Resources:
       GenerateSecretString:
         SecretStringTemplate: '{"username": "admin"}'
         GenerateStringKey: "password"
-        PasswordLength: 32
+        PasswordLength: 16
         ExcludeCharacters: '"@/\'
   DBInstance:
-    Type: 'AWS::RDS::DBInstance'
+    Type: AWS::RDS::DBInstance
     Properties:
       DBInstanceIdentifier: sparc-database
       AllocatedStorage: !Ref DbStorage
       DBInstanceClass: !Ref DbInstanceClass
       Engine: "MYSQL"
-      MasterUsername: !Sub '{{resolve:SecretsManager:${SecretsManagerSparcAdmin}::username}}'
-      MasterUserPassword: !Sub '{{resolve:SecretsManager:${SecretsManagerSparcAdmin}::password}}'
+      MasterUsername: !Join ['', ['{{resolve:secretsmanager:', !Ref SecretsManagerSparcAdmin, ':SecretString:username}}' ]]
+      MasterUserPassword: !Join ['', ['{{resolve:secretsmanager:', !Ref SecretsManagerSparcAdmin, ':SecretString:password}}' ]]
       BackupRetentionPeriod: 7
       MultiAZ: true
       EngineVersion: !Ref DbVersion
@@ -95,7 +78,7 @@ Resources:
       DBSubnetGroupName: !Ref DBSubnetGroup
       VPCSecurityGroups:
         - Fn::ImportValue:
-           'Fn::Sub': '${InfraStackName}-DatabaseSG'
+            'Fn::Sub': '${InfraStackName}-DatabaseSG'
       Tags:
         - Key: Name
           Value: sparc-database
@@ -106,4 +89,3 @@ Resources:
       SecretId: !Ref SecretsManagerSparcAdmin
       TargetId: !Ref DBInstance
       TargetType: 'AWS::RDS::DBInstance'
-
