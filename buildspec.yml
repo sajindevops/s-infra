@@ -15,6 +15,7 @@ phases:
     commands:
       - ls -lt
       - cat README.md
+      - echo $templates
       - for files in $templates; do echo $files; aws cloudformation validate-template --template-body file://$templates; done
   build:
     commands:
