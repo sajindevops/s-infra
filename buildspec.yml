@@ -12,6 +12,7 @@ phases:
       python: 3.9
   pre_build:
     commands:
+      - echo "validating templates"
       - ls -lt
       - cat README.md
       - FILES=$(echo $templates)
