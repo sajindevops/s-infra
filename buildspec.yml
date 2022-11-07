@@ -15,7 +15,7 @@ phases:
       - ls -lt
       - cat README.md
       - FILES=$(echo $templates)
-      - for files in $FILES; do aws cloudformation validate-template --template-body file://$files; done
+      - for cfnfiles in $FILES; do aws cloudformation validate-template --template-body file://$cfnfiles; done
   build:
     commands:
        - FILES=$(echo $templates)
