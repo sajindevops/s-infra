@@ -14,11 +14,12 @@ phases:
     commands:
       - ls -lt
       - cat README.md
-      - echo $templates
-      - for files in $templates; do aws cloudformation validate-template --template-body file://master-stack.yaml; done
+      - FILES=$(echo $templates)
+      - for files in $FILES; do aws cloudformation validate-template --template-body file://$files; done
   build:
     commands:
-       - for cfnfiles in $templates; do echo "cfnfiles $cfnfiles"; aws s3 cp $cfnfiles s3://spc-template-store; done
+       - FILES=$(echo $templates)
+       - for cfnfiles in $FILES; do aws s3 cp $cfnfiles s3://spc-template-store; done
 artifacts:
   files:
     - application.zip
