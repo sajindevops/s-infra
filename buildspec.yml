@@ -4,8 +4,8 @@ env:
   git-credential-helper: yes
   variables:
      templates: |
-     "sparc-db.yaml"       
-     "master-stack.yaml"
+       - "sparc-db.yaml"       
+       - "master-stack.yaml"
 phases:
   install:
     runtime-versions:
