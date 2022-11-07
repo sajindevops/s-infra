@@ -74,7 +74,7 @@ Resources:
       StorageEncrypted: true
       CopyTagsToSnapshot: true
       EnableIAMDatabaseAuthentication: false
-      DeletionProtection: true
+      DeletionProtection: false
       DBSubnetGroupName: !Ref DBSubnetGroup
       VPCSecurityGroups:
         - Fn::ImportValue:
