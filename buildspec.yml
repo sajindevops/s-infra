@@ -20,7 +20,7 @@ phases:
   build:
     commands:
        - FILES=$(echo $templates)
-       - for cfnfiles in $FILES; do aws s3 cp $cfnfiles s3://spc-template-store; done
+       - for cfnfiles in $FILES; do aws s3 cp $cfnfiles s3://spc-pp-dev-template-store; done
 artifacts:
   files:
     - application.zip
